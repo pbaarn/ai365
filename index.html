@@ -277,10 +277,21 @@
         <div class="journal-timeline-container glass-panel">
           <div class="timeline-header">
             <h3>Jouw Persoonlijke Groeilogboek</h3>
-            <button class="btn btn-outline-danger btn-sm" id="btn-reset-data">
-              <i data-lucide="trash-2"></i>
-              <span>Reset Alle Data</span>
-            </button>
+            <div class="timeline-header-actions">
+              <button class="btn btn-outline btn-sm" id="btn-export-data" title="Exporteer logboek als JSON">
+                <i data-lucide="download"></i>
+                <span>Exporteren</span>
+              </button>
+              <button class="btn btn-outline btn-sm" id="btn-import-data" title="Importeer logboek JSON">
+                <i data-lucide="upload"></i>
+                <span>Importeren</span>
+              </button>
+              <button class="btn btn-outline-danger btn-sm" id="btn-reset-data" title="Reset alle voortgang">
+                <i data-lucide="trash-2"></i>
+                <span>Reset</span>
+              </button>
+              <input type="file" id="import-file-input" accept=".json" style="display: none;">
+            </div>
           </div>
           
           <div class="journal-timeline" id="journal-timeline">

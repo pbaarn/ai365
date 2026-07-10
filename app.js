@@ -979,6 +979,62 @@ function handleResetAllData() {
   }
 }
 
+// Export data to JSON file
+function handleExportData() {
+  if (state.journal.length === 0) {
+    alert("Er is nog geen data in je leerdagboek om te exporteren.");
+    return;
+  }
+  
+  const dataStr = JSON.stringify({ journal: state.journal }, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `ai365-leerdagboek-backup-${getLocalDateString()}.json`;
+  
+  document.body.appendChild(link);
+  link.click();
+  
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+// Import data from JSON file
+function handleImportData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    try {
+      const data = JSON.parse(event.target.result);
+      
+      // Simple validation
+      if (!data || !Array.isArray(data.journal)) {
+        throw new Error("Ongeldig bestandsformaat. Het JSON-bestand moet een 'journal'-lijst bevatten.");
+      }
+      
+      if (confirm(`Weet je zeker dat je ${data.journal.length} logboeknotitie(s) wilt importeren? Dit zal je huidige lokale data overschrijven.`)) {
+        state.journal = data.journal;
+        saveState();
+        renderAll();
+        triggerCelebration();
+        alert("Gegevens succesvol geïmporteerd! 🎉");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Fout bij importeren: " + err.message);
+    } finally {
+      // Clear input so same file can be uploaded again
+      e.target.value = '';
+    }
+  };
+  
+  reader.readAsText(file);
+}
+
 // ==========================================================================
 // EVENT LISTENERS & ROUTING
 // ==========================================================================
@@ -1066,8 +1122,13 @@ function setupEventListeners() {
   // Journal Note form submission
   document.getElementById('form-journal-note').addEventListener('submit', handleJournalFormSubmit);
   
-  // Reset data button
+  // Reset, Export & Import data buttons
   document.getElementById('btn-reset-data').addEventListener('click', handleResetAllData);
+  document.getElementById('btn-export-data').addEventListener('click', handleExportData);
+  document.getElementById('btn-import-data').addEventListener('click', () => {
+    document.getElementById('import-file-input').click();
+  });
+  document.getElementById('import-file-input').addEventListener('change', handleImportData);
   
   // Modal close handlers (Esc fallback for dialogs)
   const modalRandomizer = document.getElementById('modal-randomizer');
