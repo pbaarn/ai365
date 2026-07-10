@@ -1,0 +1,17 @@
+{
+  "name": "ai-activities-tracker",
+  "version": "1.0.0",
+  "description": "A web application to track daily AI activities and spark inspiration.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "canvas-confetti": "^1.9.3"
+  }
+}

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 365 – Dagelijkse AI Integratie Tracker</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Maak AI onderdeel van je dagelijkse routine. Track activiteiten, selecteer willekeurige opdrachten en bouw een persoonlijk leerdagboek op.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/style.css">
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar glass-panel" aria-label="Hoofdnavigatie">
+      <div class="sidebar-brand">
+        <div class="logo-glow"></div>
+        <span class="logo-text">AI 365</span>
+        <span class="logo-sub">Normaliseer AI</span>
+      </div>
+      
+      <!-- Streak & Progress Widget -->
+      <div class="sidebar-widget streak-widget glass-panel">
+        <div class="streak-header">
+          <span class="streak-icon">🔥</span>
+          <span class="streak-title">Daily Streak</span>
+        </div>
+        <div class="streak-days" id="streak-display">0 dagen</div>
+        <div class="streak-sub" id="streak-subtext">Begin vandaag met je eerste activiteit!</div>
+      </div>
+      
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav">
+        <ul>
+          <li>
+            <button class="nav-btn active" id="nav-dashboard" data-view="dashboard">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Dashboard</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-btn" id="nav-activities" data-view="activities">
+              <i data-lucide="compass"></i>
+              <span>Alle Activiteiten</span>
+              <span class="badge" id="activity-count-badge">0</span>
+            </button>
+          </li>
+          <li>
+            <button class="nav-btn" id="nav-journal" data-view="journal">
+              <i data-lucide="book-open"></i>
+              <span>Leerdagboek</span>
+              <span class="badge badge-success" id="completed-count-badge">0</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+      
+      <!-- Sidebar Footer (Daily Focus Info) -->
+      <div class="sidebar-widget daily-focus-widget glass-panel">
+        <div class="daily-focus-title">Focus van vandaag</div>
+        <div class="daily-focus-day" id="focus-day-name">Donderdag</div>
+        <div class="daily-focus-topic" id="focus-day-topic">Muziek & Sound Design</div>
+        <p class="daily-focus-desc" id="focus-day-desc">Laat AI akkoordprogressies bedenken of synthesizers uitleggen.</p>
+      </div>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- HEADER -->
+      <header class="main-header glass-panel">
+        <h1 id="view-title">Dashboard</h1>
+        <div class="header-actions">
+          <button class="btn btn-primary" id="btn-pick-random-header">
+            <i data-lucide="shuffle"></i>
+            <span>Kies Willekeurig</span>
+          </button>
+        </div>
+      </header>
+      
+      <!-- VIEW: DASHBOARD -->
+      <section id="view-section-dashboard" class="view-section active">
+        <!-- Hero Section -->
+        <div class="hero-card glass-panel">
+          <div class="hero-content">
+            <h2>Avontuur met AI, 15 minuten per dag.</h2>
+            <p>Verander AI van een gadget in een denkgewoonte. Kies een activiteit uit je lijst, leg je bevindingen vast en bouw dagelijkse routine op.</p>
+            <div class="hero-buttons">
+              <button class="btn btn-glow" id="btn-pick-random-hero">
+                <i data-lucide="dices"></i>
+                <span>Laat AI Beslissen (Random)</span>
+              </button>
+              <button class="btn btn-outline" id="btn-browse-activities">
+                <i data-lucide="list-filter"></i>
+                <span>Blader door Lijst</span>
+              </button>
+            </div>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-circle-container">
+              <svg class="stat-circle" viewBox="0 0 36 36">
+                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                <path class="circle-fill" id="stats-progress-ring" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+              </svg>
+              <div class="stat-circle-text">
+                <span class="stat-number" id="stats-percentage">0%</span>
+                <span class="stat-label">voltooid</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Grid Layout -->
+        <div class="dashboard-grid">
+          
+          <!-- Column 1: Today's Recommendations -->
+          <div class="dashboard-col glass-panel">
+            <div class="col-header">
+              <i data-lucide="sparkles"></i>
+              <h3>Aanbevolen voor Vandaag</h3>
+            </div>
+            <p class="col-subheader">Op basis van het dagschema: <strong id="recommendations-theme-tag">Muziek Lab</strong></p>
+            <div class="activities-recommendations-list" id="recommendations-list">
+              <!-- Dynamically populated -->
+              <div class="loading-spinner"></div>
+            </div>
+          </div>
+          
+          <!-- Column 2: Progress Metrics & Levels -->
+          <div class="dashboard-col glass-panel">
+            <div class="col-header">
+              <i data-lucide="bar-chart-3"></i>
+              <h3>Jouw Niveau Breakdown</h3>
+            </div>
+            <p class="col-subheader">De 4 niveaus van AI-affiniteit</p>
+            <div class="levels-breakdown">
+              
+              <!-- Level: Consumer -->
+              <div class="level-bar-container">
+                <div class="level-info">
+                  <span class="level-badge badge-consumer">Consumer</span>
+                  <span class="level-count" id="level-count-consumer">0 / 0</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill progress-consumer" id="level-bar-consumer" style="width: 0%"></div>
+                </div>
+              </div>
+              
+              <!-- Level: Collaborator -->
+              <div class="level-bar-container">
+                <div class="level-info">
+                  <span class="level-badge badge-collaborator">Collaborator</span>
+                  <span class="level-count" id="level-count-collaborator">0 / 0</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill progress-collaborator" id="level-bar-collaborator" style="width: 0%"></div>
+                </div>
+              </div>
+              
+              <!-- Level: Creator -->
+              <div class="level-bar-container">
+                <div class="level-info">
+                  <span class="level-badge badge-creator">Creator</span>
+                  <span class="level-count" id="level-count-creator">0 / 0</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill progress-creator" id="level-bar-creator" style="width: 0%"></div>
+                </div>
+              </div>
+              
+              <!-- Level: Builder -->
+              <div class="level-bar-container">
+                <div class="level-info">
+                  <span class="level-badge badge-builder">Builder</span>
+                  <span class="level-count" id="level-count-builder">0 / 0</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill progress-builder" id="level-bar-builder" style="width: 0%"></div>
+                </div>
+              </div>
+              
+            </div>
+            
+            <div class="motivation-box glass-panel">
+              <div class="motivation-icon">💡</div>
+              <p class="motivation-text" id="motivational-quote">"Niet 'AI leren', maar AI normaliseren. Dat is de sleutel tot succes."</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- VIEW: ACTIVITIES -->
+      <section id="view-section-activities" class="view-section">
+        <!-- Filter Controls -->
+        <div class="filter-controls-container glass-panel">
+          <div class="search-box">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="search-input" placeholder="Zoek op activiteit of categorie...">
+          </div>
+          
+          <div class="filter-options">
+            <div class="filter-group">
+              <span class="filter-label">Niveau:</span>
+              <div class="filter-pills" id="level-filters">
+                <button class="pill active" data-filter="all">Alles</button>
+                <button class="pill" data-filter="Consumer">Consumer</button>
+                <button class="pill" data-filter="Collaborator">Collaborator</button>
+                <button class="pill" data-filter="Creator">Creator</button>
+                <button class="pill" data-filter="Builder">Builder</button>
+              </div>
+            </div>
+            
+            <div class="filter-group">
+              <span class="filter-label">Categorie:</span>
+              <select id="category-select" class="glass-select">
+                <option value="all">Alle Categorieën</option>
+                <!-- Dynamically populated -->
+              </select>
+            </div>
+            
+            <div class="filter-group checkbox-filter">
+              <label class="toggle-switch">
+                <input type="checkbox" id="filter-hide-completed">
+                <span class="slider"></span>
+              </label>
+              <span class="filter-label">Verberg voltooid</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Activities Grid -->
+        <div class="activities-grid" id="activities-grid">
+          <!-- Dynamically populated -->
+          <div class="loading-spinner"></div>
+        </div>
+      </section>
+      
+      <!-- VIEW: JOURNAL -->
+      <section id="view-section-journal" class="view-section">
+        <!-- Journal Dashboard Info -->
+        <div class="journal-summary-card glass-panel">
+          <div class="journal-summary-item">
+            <i data-lucide="check-circle-2" class="icon-success"></i>
+            <div>
+              <h4 id="journal-stat-total">0</h4>
+              <p>Activiteiten Voltooid</p>
+            </div>
+          </div>
+          <div class="journal-summary-item">
+            <i data-lucide="calendar" class="icon-primary"></i>
+            <div>
+              <h4 id="journal-stat-this-week">0</h4>
+              <p>Deze Week</p>
+            </div>
+          </div>
+          <div class="journal-summary-item">
+            <i data-lucide="edit-3" class="icon-info"></i>
+            <div>
+              <h4 id="journal-stat-notes">0</h4>
+              <p>Met Logboeknotities</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Journal Entries List -->
+        <div class="journal-timeline-container glass-panel">
+          <div class="timeline-header">
+            <h3>Jouw Persoonlijke Groeilogboek</h3>
+            <button class="btn btn-outline-danger btn-sm" id="btn-reset-data">
+              <i data-lucide="trash-2"></i>
+              <span>Reset Alle Data</span>
+            </button>
+          </div>
+          
+          <div class="journal-timeline" id="journal-timeline">
+            <!-- Dynamically populated -->
+            <p class="empty-state">Je hebt nog geen activiteiten voltooid. Klik op "Alle Activiteiten" of "Kies Willekeurig" om te beginnen!</p>
+          </div>
+        </div>
+      </section>
+      
+    </main>
+  </div>
+  
+  <!-- MODAL: RANDOM SELECTOR (DIALOG) -->
+  <dialog id="modal-randomizer" closedby="any" class="glass-modal" aria-labelledby="randomizer-modal-title">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="randomizer-modal-title">AI Beslissingswiel</h3>
+        <button class="btn-close" id="btn-close-randomizer" aria-label="Sluiten">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body text-center">
+        <p class="modal-subtitle">We selecteren een willekeurige activiteit die past bij jouw leerdoelen...</p>
+        
+        <!-- Spinning Reel/Card -->
+        <div class="spinner-container">
+          <div class="spinner-glow"></div>
+          <div class="spinner-card" id="spinner-card-display">
+            <!-- Dynamically animated content -->
+            <div class="spinner-card-inner">
+              <div class="spinner-placeholder">Druk op Starten!</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="selected-activity-display" id="selected-activity-display" style="display: none;">
+          <div class="activity-meta">
+            <span class="level-badge" id="selected-activity-level">Collaborator</span>
+            <span class="category-tag" id="selected-activity-cat">Dynamics</span>
+          </div>
+          <h4 class="activity-text" id="selected-activity-text">Laat AI een FetchXML query optimaliseren.</h4>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn btn-primary btn-lg w-full" id="btn-start-spin">
+          <i data-lucide="play-circle"></i>
+          <span>Start Selectie!</span>
+        </button>
+        
+        <div class="spin-success-actions" id="spin-actions" style="display: none;">
+          <button class="btn btn-outline" id="btn-spin-again">
+            <i data-lucide="refresh-cw"></i>
+            <span>Nog een keer</span>
+          </button>
+          <button class="btn btn-success" id="btn-complete-spin-activity">
+            <i data-lucide="check"></i>
+            <span>Gedaan!</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+  
+  <!-- MODAL: ADD JOURNAL NOTE (DIALOG) -->
+  <dialog id="modal-journal-note" closedby="any" class="glass-modal" aria-labelledby="journal-modal-title">
+    <div class="modal-content">
+      <form method="dialog" id="form-journal-note">
+        <div class="modal-header">
+          <h3 id="journal-modal-title">Activiteit Voltooid! 🎉</h3>
+          <button type="button" class="btn-close" id="btn-close-journal" aria-label="Sluiten">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <p class="modal-subtitle">Gefeliciteerd met het voltooien van deze activiteit! Leg hier kort je inzichten of notities vast (optioneel):</p>
+          
+          <div class="selected-activity-summary glass-panel">
+            <div class="summary-meta">
+              <span class="level-badge" id="journal-note-level">Collaborator</span>
+              <span class="category-tag" id="journal-note-cat">Muziek</span>
+            </div>
+            <p class="summary-text" id="journal-note-activity-text">Melodieën analyseren met AI</p>
+          </div>
+          
+          <div class="form-group">
+            <label for="journal-note-textarea" class="form-label">Notities / Leerervaring:</label>
+            <textarea id="journal-note-textarea" class="glass-textarea" placeholder="Welk AI model heb je gebruikt? Wat werkte goed? Wat viel je op? (bijv: Met Claude 3.5 Sonnet akkoorden gegenereerd...)"></textarea>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="btn-skip-journal-note">Slaan over</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-journal-note">Opslaan & Afronden</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+  
+  <!-- Scripts -->
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
